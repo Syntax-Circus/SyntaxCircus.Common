@@ -3,7 +3,7 @@
 [![Build](https://github.com/Syntax-Circus/SyntaxCircus.Common/actions/workflows/build.yml/badge.svg)](https://github.com/Syntax-Circus/SyntaxCircus.Common/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
-The handful of contract types that keep getting reinvented per product: a pagination result, `ClaimsPrincipal` claim resolution, and a minimal current-user abstraction built on top of it.
+The handful of contract types and dependency-free helpers that keep getting reinvented per product: a pagination result, `ClaimsPrincipal` claim resolution, a minimal current-user abstraction, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
 
 > **No support guaranteed.** Published as-is and maintained on a best-effort basis. Issues and PRs are welcome, but there's no SLA — fork it or vendor what you need if that's not enough.
 
@@ -40,6 +40,34 @@ public sealed class MyService(ICurrentUserService currentUser)
 ```
 
 A thin scoped wrapper over `IHttpContextAccessor` exposing `IsAuthenticated`, `UserId`, `Email`, `DisplayName`, and the raw `Principal`, built on `ClaimsPrincipalExtensions`.
+
+## PeriodicBackgroundService
+
+```csharp
+public sealed class CleanupWorker(ILogger<CleanupWorker> logger)
+    : PeriodicBackgroundService(TimeSpan.FromMinutes(5), logger)
+{
+    protected override async Task ExecuteTickAsync(CancellationToken cancellationToken)
+    {
+        // do the periodic work
+    }
+}
+```
+
+A `BackgroundService` base that runs `ExecuteTickAsync` on a fixed interval — one failing tick is caught and logged rather than crashing the whole service, and the delay is between ticks (not tick starts), so a slow tick can't overlap the next one.
+
+## SlidingWindowRateLimiter
+
+```csharp
+var limiter = new SlidingWindowRateLimiter(permitLimit: 5, window: TimeSpan.FromMinutes(1));
+
+if (!limiter.TryAcquire(key: remoteIpAddress))
+{
+    // reject
+}
+```
+
+A plain, key-based sliding-window limiter with no HttpContext or middleware dependency — for hosts that aren't a normal ASP.NET Core request pipeline (an embedded server, a SignalR hub, a background worker) where `System.Threading.RateLimiting`'s middleware integration doesn't apply.
 
 ## Contributing
 
