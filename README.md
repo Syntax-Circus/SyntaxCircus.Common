@@ -1,6 +1,7 @@
 # SyntaxCircus.Common
 
 [![Build](https://github.com/Syntax-Circus/SyntaxCircus.Common/actions/workflows/build.yml/badge.svg)](https://github.com/Syntax-Circus/SyntaxCircus.Common/actions/workflows/build.yml)
+[![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.Common.svg)](https://www.nuget.org/packages/SyntaxCircus.Common)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
 The handful of contract types and dependency-free helpers that keep getting reinvented per product: a pagination result, `ClaimsPrincipal` claim resolution, a minimal current-user abstraction, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
