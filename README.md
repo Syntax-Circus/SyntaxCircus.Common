@@ -4,9 +4,32 @@
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.Common.svg)](https://www.nuget.org/packages/SyntaxCircus.Common)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
-The handful of contract types and dependency-free helpers that keep getting reinvented per product: a pagination result, `ClaimsPrincipal` claim resolution, a minimal current-user abstraction, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
+The handful of contract types and dependency-free helpers that keep getting reinvented per product: operation results, a pagination result, `ClaimsPrincipal` claim resolution, a minimal current-user abstraction, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
 
 > **No support guaranteed.** Published as-is and maintained on a best-effort basis. Issues and PRs are welcome, but there's no SLA — fork it or vendor what you need if that's not enough.
+
+## Result and Result&lt;T&gt;
+
+Use transport-neutral results across application boundaries. Errors carry a stable code, a client-safe message, a semantic kind, and an optional validation target; they do not carry HTTP status codes.
+
+```csharp
+public async Task<Result<Widget>> HandleAsync(CreateWidgetRequest request)
+{
+    if (string.IsNullOrWhiteSpace(request.Name))
+    {
+        return Result<Widget>.Failure(new ResultError(
+            "name-required",
+            "A name is required.",
+            ResultErrorKind.Validation,
+            "name"));
+    }
+
+    var widget = await CreateAsync(request);
+    return Result<Widget>.Success(widget);
+}
+```
+
+Failures contain at least one error. Multiple errors are reserved for validation failures, and all errors in a result have the same kind. Accessing `Value` on a failed `Result<T>` throws.
 
 ## PagedResult&lt;T&gt;
 
