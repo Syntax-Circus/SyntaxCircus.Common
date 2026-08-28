@@ -5,11 +5,11 @@
     <Nullable>enable</Nullable>
     <PackageId>SyntaxCircus.Common</PackageId>
     <Title>SyntaxCircus Common</Title>
-    <Description>Small, broadly reused contracts: PagedResult&lt;T&gt;, ClaimsPrincipal extensions, and a minimal ICurrentUserService.</Description>
+    <Description>Small, broadly reused contracts: Result&lt;T&gt;, PagedResult&lt;T&gt;, ClaimsPrincipal extensions, and a minimal ICurrentUserService.</Description>
     <Authors>Syntax Circus LLC</Authors>
     <Company>Syntax Circus LLC</Company>
     <Copyright>Copyright © Syntax Circus LLC</Copyright>
-    <PackageTags>common;contracts;pagination;claims</PackageTags>
+    <PackageTags>common;contracts;result;pagination;claims</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
