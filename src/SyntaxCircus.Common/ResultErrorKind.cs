@@ -8,4 +8,5 @@ public enum ResultErrorKind
     Conflict,
     Unauthenticated,
     Forbidden,
+    Passthrough,
 }
