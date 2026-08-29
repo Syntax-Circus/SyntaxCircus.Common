@@ -1,11 +1,11 @@
 namespace SyntaxCircus.Common;
 
 #pragma warning disable CA1000 // Factories are intentionally discoverable on Result<T>.
-public sealed class Result<T>
+public class Result<T>
 {
     private readonly T? _value;
 
-    private Result(bool isSuccess, T? value, IReadOnlyList<ResultError> errors)
+    protected Result(bool isSuccess, T? value, IReadOnlyList<ResultError> errors)
     {
         IsSuccess = isSuccess;
         _value = value;
