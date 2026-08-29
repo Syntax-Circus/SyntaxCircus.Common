@@ -4,7 +4,7 @@ public class Result
 {
     private static readonly Result SuccessResult = new(true, []);
 
-    protected Result(bool isSuccess, IReadOnlyList<ResultError> errors)
+    private protected Result(bool isSuccess, IReadOnlyList<ResultError> errors)
     {
         IsSuccess = isSuccess;
         Errors = errors;

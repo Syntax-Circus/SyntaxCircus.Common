@@ -19,11 +19,18 @@ public sealed class ApiResult<T> : Result<T>
         return new(true, value, [], null);
     }
 
-    public static ApiResult<T> Failure(HttpStatusCode statusCode, string code, string message) =>
-        new(
+    public static ApiResult<T> Failure(HttpStatusCode statusCode, string code, string message)
+    {
+        if ((int)statusCode is < 400 or > 599)
+        {
+            throw new ArgumentOutOfRangeException(nameof(statusCode), statusCode, "The status code must be in the 400-599 range.");
+        }
+
+        return new(
             false,
             default,
             ResultErrorCollection.Create(new ResultError(code, message, ResultErrorKind.Passthrough), []),
             statusCode);
+    }
 }
 #pragma warning restore CA1000

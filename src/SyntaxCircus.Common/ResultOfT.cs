@@ -5,7 +5,7 @@ public class Result<T>
 {
     private readonly T? _value;
 
-    protected Result(bool isSuccess, T? value, IReadOnlyList<ResultError> errors)
+    private protected Result(bool isSuccess, T? value, IReadOnlyList<ResultError> errors)
     {
         IsSuccess = isSuccess;
         _value = value;

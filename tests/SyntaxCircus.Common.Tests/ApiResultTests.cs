@@ -89,4 +89,18 @@ public class ApiResultTests
 
         baseResult.Value.ShouldBe("accepted");
     }
+
+    [Fact]
+    public void Failure_RejectsStatusCodeOutsideErrorRange()
+    {
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            ApiResult.Failure(HttpStatusCode.OK, "not-an-error", "This is not an error."));
+    }
+
+    [Fact]
+    public void GenericFailure_RejectsStatusCodeOutsideErrorRange()
+    {
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            ApiResult<string>.Failure(HttpStatusCode.OK, "not-an-error", "This is not an error."));
+    }
 }
