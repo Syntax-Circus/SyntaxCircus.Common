@@ -123,6 +123,17 @@ public class ResultTests
             "widgetId"));
     }
 
+    [Fact]
+    public void ResultError_AcceptsPassthroughKind()
+    {
+        var error = new ResultError(
+            "upstream-error",
+            "The upstream service returned an unexpected status.",
+            ResultErrorKind.Passthrough);
+
+        error.Kind.ShouldBe(ResultErrorKind.Passthrough);
+    }
+
     [Theory]
     [InlineData("", "Message")]
     [InlineData("code", "")]

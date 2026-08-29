@@ -1,10 +1,10 @@
 namespace SyntaxCircus.Common;
 
-public sealed class Result
+public class Result
 {
     private static readonly Result SuccessResult = new(true, []);
 
-    private Result(bool isSuccess, IReadOnlyList<ResultError> errors)
+    private protected Result(bool isSuccess, IReadOnlyList<ResultError> errors)
     {
         IsSuccess = isSuccess;
         Errors = errors;

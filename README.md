@@ -10,7 +10,7 @@ The handful of contract types and dependency-free helpers that keep getting rein
 
 ## Result and Result&lt;T&gt;
 
-Use transport-neutral results across application boundaries. Errors carry a stable code, a client-safe message, a semantic kind, and an optional validation target; they do not carry HTTP status codes.
+Use transport-neutral results across application boundaries. Errors carry a stable code, a client-safe message, a semantic kind, and an optional validation target; `Result`/`Result<T>` themselves do not carry HTTP status codes — see `ApiResult`/`ApiResult<T>` below for the one case that needs to.
 
 ```csharp
 public async Task<Result<Widget>> HandleAsync(CreateWidgetRequest request)
@@ -30,6 +30,34 @@ public async Task<Result<Widget>> HandleAsync(CreateWidgetRequest request)
 ```
 
 Failures contain at least one error. Multiple errors are reserved for validation failures, and all errors in a result have the same kind. Accessing `Value` on a failed `Result<T>` throws.
+
+## ApiResult and ApiResult&lt;T&gt;
+
+For the rare case where a failure needs to carry an exact upstream HTTP
+status code — proxying a third-party API's 429/502/503 rather than
+collapsing it into one of `ResultErrorKind`'s fixed kinds — `ApiResult`
+and `ApiResult<T>` extend `Result`/`Result<T>` with a `StatusCode`:
+
+```csharp
+public async Task<ApiResult<Widget>> HandleAsync(CreateWidgetRequest request)
+{
+    var upstream = await CallUpstreamApiAsync(request);
+    if (!upstream.IsSuccess)
+    {
+        return ApiResult<Widget>.Failure(
+            upstream.StatusCode,
+            "upstream-widget-error",
+            "The upstream widget service returned an error.");
+    }
+
+    return ApiResult<Widget>.Success(upstream.Widget);
+}
+```
+
+`StatusCode` is `null` on success — success-side status selection stays
+the caller's responsibility, same as `Result`/`Result<T>`. `Failure`
+requires a status in the 400–599 range. The constructed error always has
+`ResultErrorKind.Passthrough` and no validation target.
 
 ## PagedResult&lt;T&gt;
 
