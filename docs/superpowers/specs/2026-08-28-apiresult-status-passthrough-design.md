@@ -219,3 +219,57 @@ This spec covers only `SyntaxCircus.Common` and
   — success status selection remains entirely the controller's
   responsibility via the `onSuccess` callback, unchanged from
   `Result`/`Result<T>` today.
+
+## Amendment (2026-08-29): runtime check added to the base overloads
+
+The "HTTP mapping" section above states the new `ApiResult`/`ApiResult<T>`
+`ToActionResult` overloads are "resolved by ordinary C# overload
+resolution... no virtual dispatch, no runtime type checks." That
+described the *new* overloads correctly, but the branch's final
+whole-branch review (in `SyntaxCircus.AspNetCore.Common`) surfaced a
+consequence this section didn't call out: because dispatch is entirely by
+the variable's *compile-time* type, a value produced as `ApiResult<T>`
+but held in a `Result<T>`-typed variable — e.g. a handler interface
+declared as `Task<Result<T>>` that internally returns `ApiResult<T>` —
+silently binds to the plain `Result<T>` overload instead. The passthrough
+status is discarded with no error, and the response falls back to a
+default 500.
+
+This is exactly the shape of bug the four sinforgiver call sites this
+spec exists for are prone to: sinforgiver's handler interfaces
+conventionally declare `Task<Result<T>>`, so writing that out of habit
+for a passthrough-needing handler would silently defeat the whole
+feature.
+
+Decision: add a runtime type check to the two existing `Result`/`Result<T>`
+overloads in `ResultActionResultExtensions`, so they detect and delegate
+to the `ApiResult`/`ApiResult<T>` behavior even when the declared type is
+the base type:
+
+```csharp
+public static IActionResult ToActionResult(
+    this Result result,
+    ControllerBase controller,
+    Func<IActionResult> onSuccess)
+{
+    // ...existing null checks...
+
+    if (result is ApiResult apiResult)
+    {
+        return apiResult.ToActionResult(controller, onSuccess);
+    }
+
+    var mapper = GetMapper(controller);
+    return result.IsSuccess ? onSuccess() : mapper.Map(controller, result.Errors);
+}
+```
+
+(and the equivalent `is ApiResult<T> apiResult` check in the generic
+overload). This reverses the "no runtime type checks" line above for the
+*base* overloads only — the new `ApiResult`/`ApiResult<T>` overloads
+themselves are unchanged and still resolved purely by static overload
+resolution when the declared type is already `ApiResult`/`ApiResult<T>`;
+the runtime check only matters as a fallback inside the base overloads,
+for callers who declared the narrower base type. Approved by Jon Seeley,
+2026-08-29, after the branch's own final review flagged the gap and
+proposed this exact fix.
