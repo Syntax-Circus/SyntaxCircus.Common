@@ -123,6 +123,8 @@ A plain, key-based sliding-window limiter with no HttpContext or middleware depe
 
 ## Contributing
 
+Deferred architecture proposal: [web-neutral contracts](docs/enhancements/web-neutral-contracts.md). This is not an implemented package split.
+
 Issues and pull requests are welcome:
 - Keep changes focused, with a clear description of the behavior change.
 - Match the existing code style (see `.editorconfig`).
