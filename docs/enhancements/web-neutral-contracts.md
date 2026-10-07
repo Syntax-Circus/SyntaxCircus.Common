@@ -1,6 +1,6 @@
 # Deferred: web-neutral contracts
 
-Status: proposal only; not part of the GAT PKI implementation milestone (2026-09-30).
+Status: done 2026-10-07 (SyntaxCircus.Common 0.2.0 drops the Microsoft.AspNetCore.App framework reference; ICurrentUserService moved to SyntaxCircus.AspNetCore.Common 0.1.16). ApiResult stays in Common: it uses System.Net.HttpStatusCode only.
 
 ## Motivation
 

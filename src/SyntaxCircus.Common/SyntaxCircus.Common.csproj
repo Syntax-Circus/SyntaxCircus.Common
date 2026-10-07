@@ -5,11 +5,11 @@
     <Nullable>enable</Nullable>
     <PackageId>SyntaxCircus.Common</PackageId>
     <Title>SyntaxCircus Common</Title>
-    <Description>Small, broadly reused contracts: Result&lt;T&gt;, PagedResult&lt;T&gt;, ClaimsPrincipal extensions, and a minimal ICurrentUserService.</Description>
+    <Description>Small, broadly reused contracts: Result&lt;T&gt;, ApiResult&lt;T&gt;, PagedResult&lt;T&gt;, ClaimsPrincipal extensions, a periodic background service base and a sliding-window rate limiter. No web framework dependency.</Description>
     <Authors>Syntax Circus LLC</Authors>
     <Company>Syntax Circus LLC</Company>
     <Copyright>Copyright © Syntax Circus LLC</Copyright>
-    <PackageTags>common;contracts;result;pagination;claims</PackageTags>
+    <PackageTags>common;contracts;result;pagination;claims;web-neutral</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -21,7 +21,8 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
