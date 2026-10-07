@@ -5,11 +5,17 @@ namespace SyntaxCircus.Common;
 public static class ClaimsPrincipalExtensions
 {
     public static string? GetSubject(this ClaimsPrincipal user)
-        => user.FindFirstValue("sub") ?? user.FindFirstValue(ClaimTypes.NameIdentifier);
+        => FindFirstValue(user, "sub") ?? FindFirstValue(user, ClaimTypes.NameIdentifier);
 
     public static string? GetEmail(this ClaimsPrincipal user)
-        => user.FindFirstValue("email") ?? user.FindFirstValue(ClaimTypes.Email);
+        => FindFirstValue(user, "email") ?? FindFirstValue(user, ClaimTypes.Email);
 
     public static string? GetDisplayName(this ClaimsPrincipal user)
-        => user.FindFirstValue("name") ?? user.FindFirstValue("preferred_username");
+        => FindFirstValue(user, "name") ?? FindFirstValue(user, "preferred_username");
+
+    private static string? FindFirstValue(ClaimsPrincipal user, string claimType)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        return user.FindFirst(claimType)?.Value;
+    }
 }

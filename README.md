@@ -4,7 +4,9 @@
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.Common.svg)](https://www.nuget.org/packages/SyntaxCircus.Common)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
-The handful of contract types and dependency-free helpers that keep getting reinvented per product: operation results, a pagination result, `ClaimsPrincipal` claim resolution, a minimal current-user abstraction, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
+The handful of contract types and dependency-free helpers that keep getting reinvented per product: operation results, a pagination result, `ClaimsPrincipal` claim resolution, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
+
+Since 0.2.0 the package has **no web framework dependency**: it references only `Microsoft.Extensions.*` abstractions, so console, worker, SDK and MAUI consumers do not inherit `Microsoft.AspNetCore.App`.
 
 > **No support guaranteed.** Published as-is and maintained on a best-effort basis. Issues and PRs are welcome, but there's no SLA — fork it or vendor what you need if that's not enough.
 
@@ -74,24 +76,9 @@ user.GetEmail();       // "email" claim, falling back to ClaimTypes.Email
 user.GetDisplayName(); // "name" claim, falling back to "preferred_username"
 ```
 
-## ICurrentUserService
+## Moved: ICurrentUserService
 
-```csharp
-builder.Services.AddCurrentUserService();
-```
-
-```csharp
-public sealed class MyService(ICurrentUserService currentUser)
-{
-    public void DoSomething()
-    {
-        if (!currentUser.IsAuthenticated) return;
-        var userId = currentUser.UserId;
-    }
-}
-```
-
-A thin scoped wrapper over `IHttpContextAccessor` exposing `IsAuthenticated`, `UserId`, `Email`, `DisplayName`, and the raw `Principal`, built on `ClaimsPrincipalExtensions`.
+`ICurrentUserService`, its implementation and `AddCurrentUserService()` live in `SyntaxCircus.AspNetCore.Common` 0.1.16+ (namespace `SyntaxCircus.AspNetCore.Common`) since 0.2.0.
 
 ## PeriodicBackgroundService
 
@@ -123,7 +110,7 @@ A plain, key-based sliding-window limiter with no HttpContext or middleware depe
 
 ## Contributing
 
-Deferred architecture proposal: [web-neutral contracts](docs/enhancements/web-neutral-contracts.md). This is not an implemented package split.
+Since 0.2.0 this package has no web framework dependency, and `ICurrentUserService` moved to `SyntaxCircus.AspNetCore.Common`. The [web-neutral contracts](docs/enhancements/web-neutral-contracts.md) proposal is kept as history.
 
 Issues and pull requests are welcome:
 - Keep changes focused, with a clear description of the behavior change.

@@ -76,4 +76,16 @@ public class ClaimsPrincipalExtensionsTests
 
         user.GetDisplayName().ShouldBeNull();
     }
+
+    [Fact]
+    public void GetSubject_NullPrincipal_ThrowsArgumentNullException()
+        => Should.Throw<ArgumentNullException>(() => ((ClaimsPrincipal)null!).GetSubject());
+
+    [Fact]
+    public void GetEmail_NullPrincipal_ThrowsArgumentNullException()
+        => Should.Throw<ArgumentNullException>(() => ((ClaimsPrincipal)null!).GetEmail());
+
+    [Fact]
+    public void GetDisplayName_NullPrincipal_ThrowsArgumentNullException()
+        => Should.Throw<ArgumentNullException>(() => ((ClaimsPrincipal)null!).GetDisplayName());
 }
