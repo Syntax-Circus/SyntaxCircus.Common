@@ -1,3 +1,5 @@
+using System.Xml.Linq;
+
 namespace SyntaxCircus.Common.Tests;
 
 public class PackageShapeTests
@@ -7,7 +9,7 @@ public class PackageShapeTests
     {
         var csproj = Path.Combine(FindRepoRoot(), "src", "SyntaxCircus.Common", "SyntaxCircus.Common.csproj");
 
-        File.ReadAllText(csproj).ShouldNotContain("FrameworkReference");
+        XDocument.Load(csproj).Descendants("FrameworkReference").ShouldBeEmpty();
     }
 
     private static string FindRepoRoot()

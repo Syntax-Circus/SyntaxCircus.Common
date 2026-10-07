@@ -14,5 +14,8 @@ public static class ClaimsPrincipalExtensions
         => FindFirstValue(user, "name") ?? FindFirstValue(user, "preferred_username");
 
     private static string? FindFirstValue(ClaimsPrincipal user, string claimType)
-        => user.FindFirst(claimType)?.Value;
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        return user.FindFirst(claimType)?.Value;
+    }
 }
