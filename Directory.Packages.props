@@ -5,6 +5,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="GitVersion.MsBuild" Version="6.6.0" />
+    <!-- The analyzer runs inside the consumer's compiler, which must be at least this new (4.8 = .NET 8 SDK,
+         VS 17.8). Raising it silently stops the analyzer loading for older toolchains. -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
 

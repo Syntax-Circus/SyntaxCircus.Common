@@ -5,6 +5,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
@@ -13,5 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SyntaxCircus.Common\SyntaxCircus.Common.csproj" />
+    <!-- Referenced for its tests, and run on this project's own LogIf calls. -->
+    <ProjectReference Include="..\..\src\SyntaxCircus.Common.Analyzers\SyntaxCircus.Common.Analyzers.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 </Project>

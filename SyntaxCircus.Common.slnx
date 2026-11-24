@@ -12,6 +12,7 @@
     <File Path="publish.ps1" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="src/SyntaxCircus.Common.Analyzers/SyntaxCircus.Common.Analyzers.csproj" />
   <Project Path="src/SyntaxCircus.Common/SyntaxCircus.Common.csproj" />
   <Project Path="tests/SyntaxCircus.Common.Tests/SyntaxCircus.Common.Tests.csproj" />
 </Solution>
