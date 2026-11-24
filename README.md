@@ -4,7 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.Common.svg)](https://www.nuget.org/packages/SyntaxCircus.Common)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
-The handful of contract types and dependency-free helpers that keep getting reinvented per product: operation results, a pagination result, `ClaimsPrincipal` claim resolution, a periodic background service base, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
+The handful of contract types and dependency-free helpers that keep getting reinvented per product: operation results, a pagination result, `ClaimsPrincipal` claim resolution, a periodic background service base, lazy one-line `LogIf` logging, and a standalone sliding-window rate limiter for hosts that aren't a normal ASP.NET Core pipeline.
 
 Since 0.2.0 the package has **no web framework dependency**: it references only `Microsoft.Extensions.*` abstractions, so console, worker, SDK and MAUI consumers do not inherit `Microsoft.AspNetCore.App`.
 
@@ -107,6 +107,43 @@ if (!limiter.TryAcquire(key: remoteIpAddress))
 ```
 
 A plain, key-based sliding-window limiter with no HttpContext or middleware dependency — for hosts that aren't a normal ASP.NET Core request pipeline (an embedded server, a SignalR hub, a background worker) where `System.Threading.RateLimiting`'s middleware integration doesn't apply.
+
+## LogIf
+
+```csharp
+logger.LogIf(LogLevel.Information,
+    "Access token refused ({Reason}): {Detail}",
+    $"{reason}{result.Exception?.Message}");
+```
+
+A replacement for wrapping a log call in `if (logger.IsEnabled(...))`. The message is an ordinary logging template, the same one you would pass to `LogInformation`, so field names, formats (`{Total:N2}`), alignment and destructuring (`{@Request}`) work as they always do. Overloads also accept an `Exception`, an `EventId`, or both, before the template.
+
+The values follow in a `$"..."`, one `{}` for each placeholder, in order. No string is built: nothing inside `{}` is evaluated unless the level is enabled, and each value reaches the logger with its original type. That includes side effects, so don't put work in a value that must always happen.
+
+- **Put nothing but `{}` values in the `$"..."`.** Text between them, formats (`$"{total:N2}"`), alignment and a string built beforehand do not compile. Formatting belongs in the template.
+- **Keep the expensive expression inside the `{}`.** Work assigned to a local on an earlier line always runs.
+- **Keep the template constant.** `LogIf(level, $"User {name}", $"")` is the easy mistake: the template is built even when the level is off, and no field is recorded. Write `LogIf(level, "User {Name}", $"{name}")`.
+- **Match the value count.** At run time `LogIf` behaves like `LogInformation`. With at least one value, too few throws `FormatException` when the entry is formatted, and extra values are ignored. With no values (`$""`), nothing throws and the template is logged as written, placeholders included.
+
+Requires C# 10 or later. For a message with no values, use `LogInformation` and friends.
+
+### Build checks
+
+The package includes an analyzer for `LogIf` calls:
+
+| Rule | Warns when |
+|---|---|
+| `SCLOG001` | The number of values differs from the number of placeholders (what CA2017 does for `LogInformation`) |
+| `SCLOG002` | The message template is not a constant |
+| `SCLOG003` | The values are not an interpolated string written in the call. With `default`, for example, nothing is ever logged |
+| `SCLOG004` | The logger cannot parse the template, for example because of an unmatched brace |
+
+```csharp
+logger.LogIf(LogLevel.Information, "{Reason}: {Detail}", $"{reason}");
+// warning SCLOG001: Message template placeholders: 2; values supplied: 1
+```
+
+It needs no setup. Change a rule's severity in `.editorconfig`, for example `dotnet_diagnostic.SCLOG001.severity = error`. It checks the number of values, not their order. It is built against Roslyn 4.8, so it needs the .NET 8 SDK or Visual Studio 17.8, or later.
 
 ## Contributing
 

@@ -5,11 +5,11 @@
     <Nullable>enable</Nullable>
     <PackageId>SyntaxCircus.Common</PackageId>
     <Title>SyntaxCircus Common</Title>
-    <Description>Small, broadly reused contracts: Result&lt;T&gt;, ApiResult&lt;T&gt;, PagedResult&lt;T&gt;, ClaimsPrincipal extensions, a periodic background service base and a sliding-window rate limiter. No web framework dependency.</Description>
+    <Description>Small, broadly reused contracts: Result&lt;T&gt;, ApiResult&lt;T&gt;, PagedResult&lt;T&gt;, ClaimsPrincipal extensions, a periodic background service base, a sliding-window rate limiter and LogIf logging extensions that only evaluate arguments when the level is enabled. No web framework dependency.</Description>
     <Authors>Syntax Circus LLC</Authors>
     <Company>Syntax Circus LLC</Company>
     <Copyright>Copyright © Syntax Circus LLC</Copyright>
-    <PackageTags>common;contracts;result;pagination;claims;web-neutral</PackageTags>
+    <PackageTags>common;contracts;result;pagination;claims;logging;web-neutral</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -28,4 +28,22 @@
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Not a dependency: builds the analyzer first, so that it can be packed into this package. -->
+    <ProjectReference Include="..\SyntaxCircus.Common.Analyzers\SyntaxCircus.Common.Analyzers.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackAnalyzer</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+  <!-- Asks the analyzer project where it built to, so that a custom output path cannot pack a stale DLL. -->
+  <Target Name="PackAnalyzer">
+    <!-- This runs once per library target framework, which the analyzer project must not inherit. -->
+    <MSBuild Projects="..\SyntaxCircus.Common.Analyzers\SyntaxCircus.Common.Analyzers.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)" RemoveProperties="TargetFramework">
+      <Output TaskParameter="TargetOutputs" ItemName="AnalyzerAssembly" />
+    </MSBuild>
+    <Error Condition="'@(AnalyzerAssembly)' == '' Or !Exists('@(AnalyzerAssembly)')" Text="The analyzer was not found, so the package would ship without it: '@(AnalyzerAssembly)'" />
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="@(AnalyzerAssembly)" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
 </Project>
